@@ -1,12 +1,12 @@
 package lib
 
 import (
-	"fmt"
+	"log"
 	"runtime"
 )
 
 func PrintStackTrace(err error) {
 	stackTrace := make([]byte, 1024)
 	runtime.Stack(stackTrace, false)
-	fmt.Printf("Stack trace:\n%s\n", stackTrace)
+	log.Printf("Stack trace:\n%s\n", stackTrace)
 }

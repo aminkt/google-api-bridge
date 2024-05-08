@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/aminkt/google-api-bridge/bridges"
 	"github.com/aminkt/google-api-bridge/lib"
+	"log"
 	"net/http"
 )
 
@@ -44,6 +45,6 @@ func VerifyIdTokenHandler(w http.ResponseWriter, r *http.Request) {
 	// Write the JSON data to the response
 	_, err = w.Write(jsonData)
 	if err != nil {
-		fmt.Println("Failed to write JSON to response:", err)
+		log.Printf("Failed to write JSON to response:", err)
 	}
 }
