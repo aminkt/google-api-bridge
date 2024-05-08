@@ -71,6 +71,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            google-api-bridge.linux
-            google-api-bridge.mac
-            google-api-bridge.exe
+            google-api-bridge/google-api-bridge.linux
+            google-api-bridge/google-api-bridge.mac
+            google-api-bridge/google-api-bridge.exe
