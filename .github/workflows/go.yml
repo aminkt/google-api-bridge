@@ -1,0 +1,76 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+        default: '1.0'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Build For Linux
+      run: GOOS=linux GOARCH=amd64 go build -o google-api-bridge.linux
+
+    - name: Build For MacOs
+      run: GOOS=darwin GOARCH=amd64 go build -o google-api-bridge.mac
+
+    - name: Build For Windows
+      run: GOOS=windows GOARCH=amd64 go build -o google-api-bridge.exe
+    
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: google-api-bridge
+        path: |
+          google-api-bridge.linux
+          google-api-bridge.mac
+          google-api-bridge.exe
+
+  release:
+    name: Create a new release and upload application binary
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download app from build
+        uses: actions/download-artifact@v1
+        with:
+          name: google-api-bridge
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/v${{ github.event.inputs.version }}',
+              sha: context.sha
+            })
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          name: Release v${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            google-api-bridge.linux
+            google-api-bridge.mac
+            google-api-bridge.exe
